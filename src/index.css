@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Then - Custom styles with font-face alternative */
+@font-face {
+  font-family: 'Syncopate';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/syncopate/v17/pe0sMIuPIYBCpEV5eFdCBfe5.woff2) format('woff2');
+}
+@font-face {
+  font-family: 'Syncopate';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/syncopate/v17/pe0sMIuPIYBCpEV5eFdCBfe5.woff2) format('woff2');
+}
+
+/* Rest of your existing CSS exactly as you had it */
+:root {
+  --font-syncopate: 'Syncopate', sans-serif;
+}
+body {
+  @apply bg-white text-black;
+  font-family: var(--font-syncopate);
+}
+
+.fashion-heading {
+  @apply text-[8vw] font-bold leading-none tracking-tighter;
+  font-family: var(--font-syncopate);
+}
+
+.fashion-subheading {
+  @apply text-xl md:text-2xl font-light tracking-widest uppercase;
+}
+
+.fashion-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12;
+}
+
+.fashion-card {
+  @apply relative overflow-hidden cursor-pointer;
+}
+
+.fashion-card img {
+  @apply transition-transform duration-700 grayscale;
+}
+
+.fashion-card:hover img {
+  @apply scale-105;
+}
+
+.fashion-overlay {
+  @apply absolute inset-0 bg-black bg-opacity-0 transition-all duration-500;
+}
+
+.fashion-card:hover .fashion-overlay {
+  @apply bg-opacity-20;
+}
+
+.fashion-text {
+  @apply absolute bottom-0 left-0 p-6 transform translate-y-full transition-transform duration-500;
+}
+
+.fashion-card:hover .fashion-text {
+  @apply translate-y-0;
+}
+
+/* Custom animation for cart slide-in effect */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+/* Hide scrollbar for carousel view */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom styles for product zoom */
+.zoom-container {
+  overflow: hidden;
+}
+
+.zoom-image {
+  transition: transform 0.5s ease;
+}
+
+.zoom-image:hover {
+  transform: scale(1.5);
+}
+
+/* Open/close transition for details tag */
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+details > summary + * {
+  margin-top: 0;
+}
+
+details:not([open]) > *:not(summary) {
+  display: none;
+}
+
+/* Animations for Featured Products */
+@keyframes border-flow {
+  0%, 100% {
+    border-image: linear-gradient(to right, #FFD700, #FFA500, #FFD700) 1;
+  }
+  50% {
+    border-image: linear-gradient(to left, #FFD700, #FFA500, #FFD700) 1;
+  }
+}
+
+.animate-border-flow {
+  animation: border-flow 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 4s ease-in-out infinite 1s;
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
