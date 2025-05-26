@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent initial white flash */
+html {
+  background-color: black;
+}
+
 /* Then - Custom styles with font-face alternative */
 @font-face {
   font-family: 'Syncopate';
@@ -23,8 +28,9 @@
   --font-syncopate: 'Syncopate', sans-serif;
 }
 body {
-  @apply bg-white text-black;
+  @apply bg-black text-white;
   font-family: var(--font-syncopate);
+  min-height: 100vh;
 }
 
 .fashion-heading {
@@ -159,4 +165,52 @@ details:not([open]) > *:not(summary) {
   50% {
     transform: translateY(-10px);
   }
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Global Loading Screen Animations */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.loading-screen-exit {
+  animation: fade-out 0.5s ease-out forwards;
+}
+
+/* Enhanced loading spinner */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top-color: #FFD700;
+  animation: spin 1s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+/* Loading overlay for components */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  backdrop-filter: blur(4px);
 }

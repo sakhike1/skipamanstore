@@ -161,18 +161,20 @@ const NewArrivalsPage: React.FC = () => {
     setPriceRange([0, 100]);
   };
   
-  return (
+  return ( 
     <div>
       {/* Hero Section: full black bg with padding-top */}
       <div className="bg-black text-white pt-28 md:pt-32 px-6 md:px-20 pb-20">
         <div className="md:flex md:items-center md:justify-between gap-12">
         <div className="md:w-1/2 flex justify-center md:justify-start">
+        <div className="w-full max-w-[900px] h-[500px] overflow-hidden rounded">
   <img 
     src="https://images.pexels.com/photos/6311475/pexels-photo-6311475.jpeg" 
     alt="Sport Collection" 
-    className="w-full max-w-[600px] h-[500px] object-cover rounded transition-transform duration-500 filter grayscale hover:grayscale-0"
+    className="w-full h-[1000px] object-cover rounded transition-transform duration-500 filter grayscale hover:grayscale-0"
     loading="lazy"
   />
+</div>
 </div>
           <div className="md:w-1/2 flex flex-col justify-center items-start">
             {/* Removed VIEW MORE button */}

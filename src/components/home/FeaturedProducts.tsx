@@ -15,6 +15,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
   // Track hover state for each product
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [isGlowing, setIsGlowing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Create pulsating glow effect for the promo card
@@ -22,7 +23,15 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
       setIsGlowing(prev => !prev);
     }, 1500);
     
-    return () => clearInterval(glowInterval);
+    // Simulate loading time (remove this in production and use actual data loading)
+    const loadingTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    
+    return () => {
+      clearInterval(glowInterval);
+      clearTimeout(loadingTimer);
+    };
   }, []);
 
   const handleViewMore = () => {
@@ -35,7 +44,12 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-black to-neutral-900">
+    <section className="py-24 bg-gradient-to-b from-black to-neutral-900 relative">
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="loading-spinner" />
+        </div>
+      )}
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16">
           <div className="space-y-2 mb-6 md:mb-0">

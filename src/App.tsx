@@ -8,10 +8,12 @@ import ProductPage from './pages/ProductPage';
 import CheckoutPage from './pages/CheckoutPage';
 import About from './pages/About';
 import NewArrivalsPage from './pages/NewArrivalsPage';
+import LoadingScreen from './components/ui/LoadingScreen';
 
 function App() {
   return (
     <CartProvider>
+      <LoadingScreen />
       <Router>
         <Layout>
           <Routes>

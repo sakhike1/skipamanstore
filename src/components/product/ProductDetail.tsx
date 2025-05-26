@@ -32,7 +32,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onGoBack }) => {
   // Handle add to cart
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) return;
-    
     addToCart(product.id, selectedSize, selectedColor, quantity);
   };
   
@@ -48,35 +47,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onGoBack }) => {
   
   return (
     <div className="max-w-6xl mx-auto bg-white">
-      {/* Top navigation bar */}
-      <div className="bg-black text-white text-xs py-2 px-4 overflow-x-hidden whitespace-nowrap">
-        <div className="animate-marquee flex items-center space-x-4">
-          <span>FREE DELIVERY OVER €50</span>
+      {/* Top navigation bar with improved marquee animation */}
+      <div className="bg-black text-white text-xs py-2 px-4 overflow-hidden whitespace-nowrap">
+        <div className="inline-block animate-marquee-smooth">
+          <span className="mx-4">FREE DELIVERY OVER €50</span>
           <span>•</span>
-          <span>FREE RETURNS POLICY</span>
+          <span className="mx-4">FREE RETURNS POLICY</span>
           <span>•</span>
-          <span>WORLDWIDE DELIVERY</span>
+          <span className="mx-4">WORLDWIDE DELIVERY</span>
           <span>•</span>
-          <span>FREE DELIVERY OVER €50</span>
+          <span className="mx-4">FREE DELIVERY OVER €50</span>
           <span>•</span>
-          <span>FREE RETURNS POLICY</span>
+          <span className="mx-4">FREE RETURNS POLICY</span>
           <span>•</span>
-          <span>WORLDWIDE DELIVERY</span>
+          <span className="mx-4">WORLDWIDE DELIVERY</span>
         </div>
       </div>
       
-      {/* Header with navigation */}
+      {/* Header without navigation links */}
       <header className="border-b border-gray-200 py-4 px-6 flex items-center justify-between">
-        <div className="flex items-center space-x-8">
-          <a href="/" className="font-bold tracking-wider">A C W*</a>
-          <nav className="hidden md:flex space-x-6">
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Category</a>
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Collection</a>
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Focus</a>
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Service Point 1</a>
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Assistance</a>
-            <a href="#" className="text-gray-500 text-sm hover:text-black transition-colors">Contacts</a>
-          </nav>
+        <div className="flex items-center">
+          <button onClick={onGoBack} className="text-gray-500 hover:text-black transition-colors mr-4">
+            Back
+          </button>
         </div>
         <div className="flex items-center space-x-4">
           <button><Heart size={18} /></button>
@@ -378,6 +371,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onGoBack }) => {
           </div>
         </div>
       )}
+
+      <style>
+        {`
+          @keyframes marqueeSmooth {
+            0% {
+              transform: translateX(100%);
+            }
+            100% {
+              transform: translateX(-100%);
+            }
+          }
+          .animate-marquee-smooth {
+            display: inline-block;
+            animation: marqueeSmooth 15s linear infinite;
+            white-space: nowrap;
+          }
+        `}
+      </style>
     </div>
   );
 };

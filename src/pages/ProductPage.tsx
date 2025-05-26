@@ -3,19 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '../data/products';
 import ProductDetail from '../components/product/ProductDetail';
 import LoadingSkeleton from '../components/ui/LoadingSkeleton';
+import { Product } from '../types';
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState<Product | null>(null);
   
   useEffect(() => {
     // Simulate loading for better UX
     const timer = setTimeout(() => {
       if (id) {
         const foundProduct = getProductById(id);
-        setProduct(foundProduct);
+        setProduct(foundProduct || null);
       }
       setIsLoading(false);
     }, 800);
