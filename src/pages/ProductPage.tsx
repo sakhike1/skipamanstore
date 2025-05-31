@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductById } from '../data/products';
 import ProductDetail from '../components/product/ProductDetail';
@@ -12,16 +12,30 @@ const ProductPage: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   
   useEffect(() => {
-    // Simulate loading for better UX
-    const timer = setTimeout(() => {
-      if (id) {
+    let isMounted = true;
+
+    const loadProduct = async () => {
+      if (!id) return;
+      
+      try {
         const foundProduct = getProductById(id);
-        setProduct(foundProduct || null);
+        if (isMounted) {
+          setProduct(foundProduct || null);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error loading product:', error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
-    }, 800);
-    
-    return () => clearTimeout(timer);
+    };
+
+    loadProduct();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
   
   const handleGoBack = () => {
@@ -49,7 +63,9 @@ const ProductPage: React.FC = () => {
   
   return (
     <div className="pt-20">
-      <ProductDetail product={product} onGoBack={handleGoBack} />
+      <Suspense fallback={<LoadingSkeleton />}>
+        <ProductDetail product={product} onGoBack={handleGoBack} />
+      </Suspense>
     </div>
   );
 };

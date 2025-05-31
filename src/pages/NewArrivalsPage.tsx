@@ -129,6 +129,8 @@ const NewArrivalsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
   
   const newArrivals = getFeaturedProducts();
   const categories = [...new Set(newArrivals.map(product => product.category))];
@@ -150,34 +152,46 @@ const NewArrivalsPage: React.FC = () => {
     if (product.price < priceRange[0] || product.price > priceRange[1]) return false;
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   
   const handleProductClick = (productId: string) => {
     navigate(`/product/${productId}`);
   };
   
   const toggleFilters = () => setShowFilters(!showFilters);
+  
   const clearFilters = () => {
     setSelectedCategory(null);
     setPriceRange([0, 100]);
+    setCurrentPage(1); // Reset to first page when clearing filters
   };
-  
-  return ( 
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
     <div>
       {/* Hero Section: full black bg with padding-top */}
       <div className="bg-black text-white pt-28 md:pt-32 px-6 md:px-20 pb-20">
         <div className="md:flex md:items-center md:justify-between gap-12">
-        <div className="md:w-1/2 flex justify-center md:justify-start">
-        <div className="w-full max-w-[900px] h-[500px] overflow-hidden rounded">
-  <img 
-    src="https://images.pexels.com/photos/6311475/pexels-photo-6311475.jpeg" 
-    alt="Sport Collection" 
-    className="w-full h-[1000px] object-cover rounded transition-transform duration-500 filter grayscale hover:grayscale-0"
-    loading="lazy"
-  />
-</div>
-</div>
+          <div className="md:w-1/2 flex justify-center md:justify-start">
+            <div className="w-full max-w-[900px] h-[500px] overflow-hidden rounded">
+              <img 
+                src="https://images.pexels.com/photos/6311475/pexels-photo-6311475.jpeg" 
+                alt="Sport Collection" 
+                className="w-full h-[1000px] object-cover rounded transition-transform duration-500 filter grayscale hover:grayscale-0"
+                loading="lazy"
+              />
+            </div>
+          </div>
           <div className="md:w-1/2 flex flex-col justify-center items-start">
-            {/* Removed VIEW MORE button */}
             <h1 className="text-7xl font-extrabold uppercase tracking-widest leading-none">
               <span>NEW</span><br />
               <span>SPORT COLLECTION</span>
@@ -242,7 +256,7 @@ const NewArrivalsPage: React.FC = () => {
             <aside className="md:w-72 bg-transparent border border-gray-300 rounded-lg p-6 text-black">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold uppercase tracking-wider">Filters</h3>
-                <button 
+                <button
                   onClick={clearFilters}
                   className="text-sm text-gray-600 hover:text-black underline"
                 >
@@ -259,7 +273,10 @@ const NewArrivalsPage: React.FC = () => {
                       <input
                         type="checkbox"
                         checked={selectedCategory === category}
-                        onChange={() => setSelectedCategory(selectedCategory === category ? null : category)}
+                        onChange={() => {
+                          setSelectedCategory(selectedCategory === category ? null : category);
+                          setCurrentPage(1);
+                        }}
                         className="accent-black w-4 h-4 cursor-pointer"
                         name="category"
                       />
@@ -281,7 +298,10 @@ const NewArrivalsPage: React.FC = () => {
                   min="0"
                   max="100"
                   value={priceRange[1]}
-                  onChange={e => setPriceRange([priceRange[0], Number(e.target.value)])}
+                  onChange={(e) => {
+                    setPriceRange([priceRange[0], Number(e.target.value)]);
+                    setCurrentPage(1);
+                  }}
                   className="w-full cursor-pointer accent-black"
                 />
               </div>
@@ -290,13 +310,58 @@ const NewArrivalsPage: React.FC = () => {
 
           {/* Products Grid */}
           <section className="flex-1">
-            {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <PromoCard onClick={() => navigate('/summer-sale')} />
-                {filteredProducts.map(product => (
-                  <ProductCard key={product.id} product={product} onClick={handleProductClick} />
-                ))}
-              </div>
+            {currentProducts.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <PromoCard onClick={() => navigate('/summer-sale')} />
+                  {currentProducts.map(product => (
+                    <ProductCard key={product.id} product={product} onClick={handleProductClick} />
+                  ))}
+                </div>
+                
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center space-x-2 mt-8">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-black text-white hover:bg-neutral-800'
+                      }`}
+                    >
+                      Previous
+                    </button>
+                    
+                    {[...Array(totalPages)].map((_, index) => (
+                      <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-3 py-1 rounded-md ${
+                          currentPage === index + 1
+                            ? 'bg-black text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {index + 1}
+                      </button>
+                    ))}
+                    
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === totalPages
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-black text-white hover:bg-neutral-800'
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 bg-transparent border border-gray-300 rounded-lg">
                 <p className="text-gray-600 mb-6">No products match your filters</p>

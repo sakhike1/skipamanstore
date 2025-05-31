@@ -80,11 +80,16 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className={`w-full h-full object-cover transition-all duration-700 ${hoveredProduct === product.id ? 'scale-105 grayscale-0' : 'grayscale'}`}
+                  className={`w-full h-full object-cover transition-all duration-700 opacity-0 transition-opacity duration-300 ${hoveredProduct === product.id ? 'scale-105 grayscale-0' : 'grayscale'}`}
                   loading="lazy"
                   width={400}
                   height={533}
                   decoding="async"
+                  fetchPriority="low"
+                  onLoad={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.classList.remove('opacity-0');
+                  }}
                 />
                 {product.featured && (
                   <span className="absolute top-4 left-4 bg-white text-black px-3 py-1 text-xs font-bold tracking-widest z-30 rounded-full">

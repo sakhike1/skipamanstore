@@ -159,6 +159,8 @@ const ShopPage: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 12;
 
   const categories = [...new Set(products.map(product => product.category))];
 
@@ -180,7 +182,6 @@ const ShopPage: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
   const filteredProducts = products.filter(product => {
     if (selectedCategory && product.category !== selectedCategory) {
       return false;
@@ -190,6 +191,12 @@ const ShopPage: React.FC = () => {
     }
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const handleProductClick = (productId: string) => {
     navigate(`/product/${productId}`);
@@ -202,6 +209,12 @@ const ShopPage: React.FC = () => {
   const clearFilters = () => {
     setSelectedCategory(null);
     setPriceRange([0, 100]);
+    setCurrentPage(1); // Reset to first page when clearing filters
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -255,7 +268,10 @@ const ShopPage: React.FC = () => {
                         name="category"
                         type="checkbox"
                         checked={selectedCategory === category}
-                        onChange={() => setSelectedCategory(selectedCategory === category ? null : category)}
+                        onChange={() => {
+                          setSelectedCategory(selectedCategory === category ? null : category);
+                          setCurrentPage(1); // Reset to first page when changing category
+                        }}
                         className="h-4 w-4 text-black focus:ring-black border-neutral-400 rounded accent-black" // accent-black for checkbox color
                       />
                       <label
@@ -282,7 +298,10 @@ const ShopPage: React.FC = () => {
                       min="0"
                       max="100"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                      onChange={(e) => {
+                        setPriceRange([priceRange[0], parseInt(e.target.value)]);
+                        setCurrentPage(1); // Reset to first page when changing price range
+                      }}
                       className="w-full h-1 bg-neutral-300 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black"
                     />
                   </div>
@@ -293,8 +312,53 @@ const ShopPage: React.FC = () => {
         )}
 
         <div className="flex-1">
-          {filteredProducts.length > 0 ? (
-            <ProductGrid products={filteredProducts} onProductClick={handleProductClick} />
+          {currentProducts.length > 0 ? (
+            <>
+              <ProductGrid products={currentProducts} onProductClick={handleProductClick} />
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2 mt-8">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded-md ${
+                      currentPage === 1
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-black text-white hover:bg-neutral-800'
+                    }`}
+                  >
+                    Previous
+                  </button>
+                  
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index + 1}
+                      onClick={() => handlePageChange(index + 1)}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === index + 1
+                          ? 'bg-black text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded-md ${
+                      currentPage === totalPages
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : 'bg-black text-white hover:bg-neutral-800'
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             // Solid B&W: No products message box
             <div className="flex flex-col items-center justify-center py-16 bg-white border border-neutral-300 rounded-lg">

@@ -45,13 +45,19 @@ const Header: React.FC = () => {
   
   // Determine text and icon colors based on scroll state and background
   const getTextColor = () => {
-    if (isScrolled) return 'text-gray-800'; // Always dark text on scrolled (white bg)
-    return isHeaderDark ? 'text-white' : 'text-gray-800'; // Adapt to the background otherwise
+    if (isScrolled) {
+      return 'text-gray-800';
+    }
+    // Return black text for shop page
+    if (location.pathname === '/shop') {
+      return 'text-black';
+    }
+    return isHeaderDark ? 'text-white' : 'text-gray-800';
   };
 
   const getHoverBgColor = () => {
     if (isScrolled) return 'hover:bg-gray-100'; // Light hover on scrolled
-    return isHeaderDark ? 'hover:bg-white/20' : 'hover:bg-black/5'; // Adapt hover to background
+    return 'hover:bg-white/20'; // White hover effect when not scrolled
   };
 
   const textColor = getTextColor();
