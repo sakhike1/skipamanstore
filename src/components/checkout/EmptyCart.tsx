@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import backgroundGif from '../../assets/Lets_a_create_202505260200.gif';
 
-// Enhanced background with better video visibility
+// Background component with optimized visibility and subtle animation
 const Background = () => (
   <>
     <div
@@ -13,85 +13,64 @@ const Background = () => (
       style={{ backgroundImage: `url(${backgroundGif})` }}
       aria-hidden="true"
     />
-    {/* Reduced overlay opacity and added gradient for better video visibility */}
     <div
-      className="absolute inset-0 w-full h-full bg-gradient-to-br from-black/20 via-transparent to-white/30"
+      className="absolute inset-0 w-full h-full bg-gradient-to-br from-black/30 via-transparent to-white/20"
       aria-hidden="true"
     />
-    {/* Subtle animated overlay for depth */}
     <motion.div
-      className="absolute inset-0 w-full h-full bg-gradient-to-t from-black/10 via-transparent to-transparent"
-      animate={{
-        opacity: [0.3, 0.1, 0.3],
-      }}
-      transition={{
-        duration: 4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
+      className="absolute inset-0 w-full h-full bg-gradient-to-t from-black/15 via-transparent to-transparent"
+      animate={{ opacity: [0.4, 0.2, 0.4] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
       aria-hidden="true"
     />
   </>
 );
 
-// Enhanced animation variants
+// Animation variants for container and items
 const containerVariants = {
-  hidden: { opacity: 0, y: 50, scale: 0.9 },
+  hidden: { opacity: 0, y: 60, scale: 0.95 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { 
-      duration: 0.8, 
-      ease: [0.25, 0.46, 0.45, 0.94],
-      staggerChildren: 0.2 
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 0.61, 0.36, 1],
+      staggerChildren: 0.15,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
+  hidden: { opacity: 0, y: 25 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
 
 const iconVariants = {
   initial: { scale: 1, rotate: 0 },
   animate: {
-    scale: [1, 1.1, 1],
-    rotate: [0, 5, -5, 0],
-    transition: { 
-      duration: 3, 
-      repeat: Infinity, 
-      ease: "easeInOut",
-      times: [0, 0.3, 0.7, 1]
-    },
+    scale: [1, 1.08, 1],
+    rotate: [0, 3, -3, 0],
+    transition: { duration: 3.5, repeat: Infinity, ease: "easeInOut" },
   },
-  hover: {
-    scale: 1.15,
-    rotate: 10,
-    transition: { duration: 0.3 }
-  }
+  hover: { scale: 1.12, rotate: 8, transition: { duration: 0.3 } },
 };
 
 const sparkleVariants = {
   animate: {
-    scale: [0, 1, 0],
+    scale: [0.5, 1.2, 0.5],
     rotate: [0, 180, 360],
-    opacity: [0, 1, 0],
+    opacity: [0, 0.8, 0],
     transition: {
-      duration: 2,
+      duration: 2.5,
       repeat: Infinity,
       ease: "easeInOut",
-      staggerChildren: 0.3
-    }
-  }
+      staggerChildren: 0.4,
+    },
+  },
 };
 
-const EmptyCart: React.FC = () => {
+const EmptyCart = () => {
   const navigate = useNavigate();
 
   const handleContinueShopping = () => {
@@ -99,126 +78,118 @@ const EmptyCart: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-900">
       <Background />
-      
-      {/* Floating elements for visual interest */}
-      <motion.div
-        className="absolute top-20 left-20 text-white/20"
-        variants={sparkleVariants}
-        animate="animate"
-      >
-        <Sparkles size={24} />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-32 right-32 text-white/20"
-        variants={sparkleVariants}
-        animate="animate"
-        style={{ animationDelay: '1s' }}
-      >
-        <Sparkles size={32} />
-      </motion.div>
-      <motion.div
-        className="absolute top-1/3 right-20 text-white/10"
-        variants={sparkleVariants}
-        animate="animate"
-        style={{ animationDelay: '2s' }}
-      >
-        <Sparkles size={20} />
-      </motion.div>
+
+      {/* Decorative floating sparkles with responsive positioning */}
+      {[
+        { top: '15%', left: '10%', size: 24, delay: '0s' },
+        { bottom: '25%', right: '15%', size: 32, delay: '1.2s' },
+        { top: '30%', right: '10%', size: 20, delay: '2.4s' },
+      ].map((sparkle, index) => (
+        <motion.div
+          key={index}
+          className="absolute hidden text-white/25 md:block"
+          style={{
+            top: sparkle.top || 'auto',
+            bottom: sparkle.bottom || 'auto',
+            left: sparkle.left || 'auto',
+            right: sparkle.right || 'auto',
+            animationDelay: sparkle.delay,
+          }}
+          variants={sparkleVariants}
+          animate="animate"
+        >
+          <Sparkles size={sparkle.size} />
+        </motion.div>
+      ))}
 
       <motion.div
-        className="relative z-10 mx-auto max-w-2xl text-center px-6"
+        className="relative z-10 mx-auto w-full max-w-3xl px-4 text-center sm:px-6 lg:px-8"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        role="region"
         aria-labelledby="empty-cart-heading"
       >
-        {/* Icon with glassmorphism effect */}
+        {/* Icon with refined glassmorphism effect */}
         <motion.div
-          className="mb-8 flex justify-center"
+          className="mb-10 flex justify-center"
           variants={itemVariants}
         >
           <motion.div
-            className="inline-flex h-32 w-32 items-center justify-center rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl"
+            className="flex h-28 w-28 items-center justify-center rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 shadow-xl md:h-36 md:w-36"
             variants={iconVariants}
             initial="initial"
             animate="animate"
             whileHover="hover"
           >
-            <ShoppingBag size={64} className="text-white drop-shadow-lg" />
+            <ShoppingBag
+              size={window.innerWidth < 768 ? 56 : 72}
+              className="text-white drop-shadow-md"
+              aria-hidden="true"
+            />
           </motion.div>
         </motion.div>
 
-        {/* Enhanced typography with better contrast */}
-        <motion.h1 
-          id="empty-cart-heading" 
-          className="mb-6 text-4xl font-bold tracking-tight text-white drop-shadow-2xl md:text-5xl lg:text-6xl"
+        {/* Typography with improved readability and responsiveness */}
+        <motion.h1
+          id="empty-cart-heading"
+          className="mb-6 text-3xl font-bold tracking-tight text-white drop-shadow-xl sm:text-4xl md:text-5xl"
           variants={itemVariants}
         >
           Your Cart is{' '}
-          <span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-indigo-400 to-violet-500 bg-clip-text text-transparent">
             Empty
           </span>
         </motion.h1>
 
-        <motion.p 
-          className="mx-auto mb-12 max-w-lg text-lg leading-relaxed text-white/90 drop-shadow-lg md:text-xl"
+        <motion.p
+          className="mx-auto mb-10 max-w-md text-base leading-relaxed text-white/85 drop-shadow-md sm:text-lg md:text-xl"
           variants={itemVariants}
         >
-          Discover amazing products waiting for you. Start your shopping journey and fill your cart with items you'll love!
+          Explore our curated collection of products. Start shopping now and fill your cart with treasures!
         </motion.p>
 
-        {/* Enhanced CTA button */}
+        {/* CTA Button with polished gradient and hover effects */}
         <motion.div variants={itemVariants}>
           <Button
             onClick={handleContinueShopping}
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 px-10 py-4 text-lg font-semibold text-white shadow-2xl transition-all duration-300 hover:shadow-blue-500/25 hover:scale-105 focus:ring-4 focus:ring-blue-300/50 backdrop-blur-sm border border-white/20"
+            className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-700 px-8 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-violet-500/30 hover:scale-[1.03] focus:ring-4 focus:ring-violet-400/50 backdrop-blur-sm border border-white/15 sm:px-10 sm:py-4 sm:text-lg"
+            aria-label="Continue shopping and explore products"
           >
-            {/* Button background animation */}
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              className="absolute inset-0 bg-gradient-to-r from-violet-600 via-indigo-500 to-violet-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               initial={false}
             />
-            
-            <span className="relative z-10 flex items-center gap-3">
+            <span className="relative z-10 flex items-center gap-2 sm:gap-3">
               Start Shopping
               <motion.div
                 className="group-hover:translate-x-1 transition-transform duration-300"
-                whileHover={{ x: 4 }}
+                whileHover={{ x: 3 }}
               >
-                <ArrowRight size={20} />
+                <ArrowRight size={window.innerWidth < 640 ? 18 : 20} />
               </motion.div>
             </span>
-            
-            {/* Shimmer effect */}
             <motion.div
-              className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-              animate={{
-                x: ['-100%', '200%'],
-              }}
+              className="absolute inset-0 -skew-x-12 bg-gradient-to-r from-transparent via-white/15 to-transparent"
+              animate={{ x: ['-100%', '200%'] }}
               transition={{
-                duration: 3,
+                duration: 2.5,
                 repeat: Infinity,
                 ease: "easeInOut",
-                repeatDelay: 2
+                repeatDelay: 1.5,
               }}
             />
           </Button>
         </motion.div>
 
-        {/* Subtle call-to-action hint */}
-        <motion.p 
-          className="mt-8 text-sm text-white/70 drop-shadow"
+        {/* Subtle promotional hint with animation */}
+        <motion.p
+          className="mt-6 text-xs text-white/75 drop-shadow-sm sm:mt-8 sm:text-sm"
           variants={itemVariants}
-          animate={{
-            opacity: [0.7, 1, 0.7],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
+          animate={{ opacity: [0.75, 1, 0.75] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         >
           ✨ Free shipping on orders over $50
         </motion.p>

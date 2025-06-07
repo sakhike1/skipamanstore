@@ -87,19 +87,18 @@ const NewArrivals: React.FC = () => {
           {/* "View Product" Button with fill animation */}
           <button
             onClick={(e) => handleViewProduct(e, product.id)}
-            aria-label={`View product details for ${product.name}`} // Accessibility improvement
+            aria-label={`View product details for ${product.name}`}
             className={`mt-6 w-full py-4 text-sm tracking-widest transition-all duration-300 active:scale-98 
               flex items-center justify-center space-x-2 overflow-hidden relative 
               ${isDarkTheme 
                 ? 'text-white border border-white/30 group-hover:text-black hover:border-white/50' 
-                : 'text-white bg-black border border-black hover:bg-white hover:text-black'
+                : 'text-white bg-black border border-black hover:bg-white hover:text-black group-hover:text-black'
               }`}
           >
-            <span className="z-10 transition-transform duration-300 font-medium group-hover:-translate-x-0.5">VIEW PRODUCT</span> {/* Subtle text slide */}
-            <ArrowRight size={16} className="z-10 relative opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ml-2" /> {/* Arrow slides in */}
-            {/* Fill layer */}
+            <span className="z-10 transition-transform duration-300 font-medium group-hover:-translate-x-0.5">VIEW PRODUCT</span>
+            <ArrowRight size={16} className="z-10 relative opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ml-2" />
             <div className={`absolute inset-0 w-0 group-hover:w-full transition-all duration-300 ease-out
-              ${isDarkTheme ? 'bg-white' : 'bg-white'}`}></div> {/* White fill for both */}
+              ${isDarkTheme ? 'bg-white' : 'bg-white'}`}></div>
           </button>
         </div>
       </div>
@@ -123,8 +122,9 @@ const NewArrivals: React.FC = () => {
             </div>
             <div className="mt-8 md:mt-0 pt-4 md:pt-0">
               <button 
+                onClick={() => navigate('/shop')}
                 className="relative overflow-hidden group flex items-center gap-2 hover:gap-4 transition-all duration-300 text-sm tracking-widest uppercase text-white border border-white/20 px-6 py-3 rounded-full hover:border-white"
-                aria-label="View all new arrivals" // Accessibility improvement
+                aria-label="View all new arrivals"
               >
                 <span className="relative z-10 transition-colors duration-300 group-hover:text-black">View all</span> 
                 <ArrowRight size={16} className="relative z-10 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-black" />
@@ -157,8 +157,9 @@ const NewArrivals: React.FC = () => {
             </div>
             <div className="mt-8 md:mt-0 pt-4 md:pt-0">
               <button 
+                onClick={() => navigate('/shop')}
                 className="relative overflow-hidden group flex items-center gap-2 hover:gap-4 px-6 py-3 transition-all duration-300 text-sm tracking-widest uppercase text-white bg-black border border-black rounded-full hover:border-black"
-                aria-label="View all trending products" // Accessibility improvement
+                aria-label="View all trending products"
               >
                 <span className="relative z-10 transition-colors duration-300 group-hover:text-black">View all</span>
                 <ArrowRight size={16} className="relative z-10 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-black" />
