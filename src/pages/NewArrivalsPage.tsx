@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { products, getFeaturedProducts } from '../data/products';
-import { Filter, X, ArrowRight, ShoppingBag, Tag } from 'lucide-react';
+import { Filter, X, ArrowRight, ShoppingBag, Tag, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface ProductCardProps {
@@ -56,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="p-4">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-semibold text-black line-clamp-1 uppercase tracking-wide">{product.name}</h3>
-          <span className="text-black font-semibold">${product.price.toFixed(2)}</span>
+          <span className="text-black font-semibold">R500</span>
         </div>
         <p className="text-sm text-gray-600 mb-3 capitalize">{product.category}</p>
         <button
@@ -103,8 +103,8 @@ const PromoCard: React.FC<{ onClick: () => void }> = ({ onClick }) => {
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-semibold text-black line-clamp-1 uppercase tracking-wide">Summer Sale Collection</h3>
           <div>
-            <span className="text-gray-500 font-medium line-through mr-2">$199.99</span>
-            <span className="text-black font-semibold">$119.99</span>
+            <span className="text-gray-500 font-medium line-through mr-2">R500</span>
+            <span className="text-black font-semibold">R500</span>
           </div>
         </div>
         <p className="text-sm text-gray-600 mb-3">Up to 40% Off Selected Items</p>
@@ -127,11 +127,32 @@ const NewArrivalsPage: React.FC = () => {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [currentPage, setCurrentPage] = useState(1);
+  const [colorIndex, setColorIndex] = useState(0);
   const productsPerPage = 12;
   
+  // Gold glitz color palette
+  const colors = [
+    '#FFD700', // Gold
+    '#FFA500', // Orange
+    '#FFC0CB', // Pink
+    '#FF69B4', // Hot Pink
+    '#DAA520', // Goldenrod
+    '#B8860B', // Dark Goldenrod
+    '#FFB6C1', // Light Pink
+    '#FFDAB9', // Peach
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % colors.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const newArrivals = getFeaturedProducts();
   const categories = [...new Set(newArrivals.map(product => product.category))];
   
@@ -167,7 +188,7 @@ const NewArrivalsPage: React.FC = () => {
   
   const clearFilters = () => {
     setSelectedCategory(null);
-    setPriceRange([0, 100]);
+    setPriceRange([0, 500]);
     setCurrentPage(1); // Reset to first page when clearing filters
   };
 
@@ -183,6 +204,15 @@ const NewArrivalsPage: React.FC = () => {
         <div className="md:flex md:items-center md:justify-between gap-12">
           <div className="md:w-1/2 flex justify-center md:justify-start">
             <div className="w-full max-w-[900px] h-[500px] overflow-hidden rounded">
+              <div 
+                className="absolute inset-0 w-full h-[1000px] opacity-20"
+                style={{
+                  backgroundImage: 'url(../assets/image4.jpg)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              />
               <img 
                 src="https://images.pexels.com/photos/6311475/pexels-photo-6311475.jpeg" 
                 alt="Sport Collection" 
@@ -192,10 +222,25 @@ const NewArrivalsPage: React.FC = () => {
             </div>
           </div>
           <div className="md:w-1/2 flex flex-col justify-center items-start">
-            <h1 className="text-7xl font-extrabold uppercase tracking-widest leading-none">
+            <motion.h1 
+              className="text-7xl font-extrabold uppercase tracking-widest leading-none"
+              animate={{
+                color: colors[colorIndex],
+                textShadow: [
+                  '0 0 10px rgba(255, 215, 0, 0.5)',
+                  '0 0 20px rgba(255, 215, 0, 0.7)',
+                  '0 0 10px rgba(255, 215, 0, 0.5)',
+                ],
+              }}
+              transition={{
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
               <span>NEW</span><br />
               <span>SPORT COLLECTION</span>
-            </h1>
+            </motion.h1>
             <p className="mt-6 max-w-lg text-gray-400 leading-relaxed">
               The brand was originally aimed at men's fashion. Starting in 1995 women's fashion was launched in all its dimensions: from the most urban lines to the more casual.
             </p>
@@ -287,23 +332,86 @@ const NewArrivalsPage: React.FC = () => {
               </div>
 
               {/* Price Filter */}
-              <div>
-                <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide">Price Range</h4>
-                <div className="flex justify-between text-gray-600 text-sm mb-4">
-                  <span>${priceRange[0]}</span>
-                  <span>${priceRange[1]}</span>
+              <div className="flex flex-col">
+                <div>
+                  <h4 className="text-sm font-semibold mb-4 uppercase tracking-wide">Price Range</h4>
+                  <div className="flex justify-between text-gray-600 text-sm mb-4">
+                    <span>R{priceRange[0]}</span>
+                    <span>R{priceRange[1]}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="500"
+                    value={priceRange[1]}
+                    onChange={(e) => {
+                      setPriceRange([priceRange[0], Number(e.target.value)]);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full cursor-pointer accent-black"
+                  />
                 </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={priceRange[1]}
-                  onChange={(e) => {
-                    setPriceRange([priceRange[0], Number(e.target.value)]);
-                    setCurrentPage(1);
+                
+                {/* Promotional Text - Contained within card */}
+                <motion.div 
+                  className="mt-8 p-8 bg-black rounded-lg border border-[#FFD700]/20 min-h-[300px] flex items-center justify-center relative overflow-hidden"
+                  animate={{
+                    boxShadow: [
+                      '0 0 15px rgba(255, 215, 0, 0.2)',
+                      '0 0 30px rgba(255, 215, 0, 0.3)',
+                      '0 0 15px rgba(255, 215, 0, 0.2)',
+                    ],
                   }}
-                  className="w-full cursor-pointer accent-black"
-                />
+                  transition={{
+                    duration: 2,
+                    ease: "easeInOut",
+                    repeat: Infinity,
+                  }}
+                >
+                  {/* Background sparkles */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-1/4 left-1/4 animate-float-slow">
+                      <Sparkles size={20} className="text-[#FFD700] opacity-40" />
+                    </div>
+                    <div className="absolute bottom-1/3 right-1/3 animate-float">
+                      <Sparkles size={16} className="text-[#FFD700] opacity-40" />
+                    </div>
+                    <div className="absolute top-1/2 right-1/4 animate-float-delayed">
+                      <Sparkles size={24} className="text-[#FFD700] opacity-40" />
+                    </div>
+                  </div>
+
+                  <motion.div 
+                    className="text-center space-y-6 relative z-10"
+                    animate={{
+                      color: colors[colorIndex],
+                      textShadow: [
+                        '0 0 10px rgba(255, 215, 0, 0.5)',
+                        '0 0 20px rgba(255, 215, 0, 0.7)',
+                        '0 0 10px rgba(255, 215, 0, 0.5)',
+                      ],
+                    }}
+                    transition={{
+                      duration: 2,
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                    }}
+                  >
+                    <p className="text-3xl font-bold tracking-wider">✨ SPECIAL OFFER ✨</p>
+                    <p className="text-xl font-medium">Free shipping on orders over $50</p>
+                    <div className="w-20 h-0.5 bg-[#FFD700] mx-auto rounded-full opacity-50"></div>
+                    <p className="text-lg font-medium">Shop now and save up to 40%</p>
+                    <p className="text-base opacity-80">Limited time offer</p>
+                    <motion.button
+                      onClick={() => navigate('/shop')}
+                      className="w-16 h-16 mx-auto rounded-full border-2 border-[#FFD700] flex items-center justify-center opacity-90 hover:opacity-100 transition-all duration-300 hover:scale-110 hover:bg-[#FFD700]/10"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <ArrowRight size={24} className="text-[#FFD700] transform transition-transform duration-300 group-hover:translate-x-1" />
+                    </motion.button>
+                  </motion.div>
+                </motion.div>
               </div>
             </aside>
           )}

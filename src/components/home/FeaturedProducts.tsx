@@ -2,12 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, ShoppingBag, Plus, Sparkles } from 'lucide-react';
 import { products } from '../../data/products';
 import { Button } from '../ui/Button';
+import { motion } from 'framer-motion';
 
 interface FeaturedProductsProps {
   onProductClick: (productId: string) => void;
 }
 
 const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) => {
+  const [colorIndex, setColorIndex] = useState(0);
+  
+  // Gold glitz color palette
+  const colors = [
+    '#FFD700', // Gold
+    '#FFA500', // Orange
+    '#FFC0CB', // Pink
+    '#FF69B4', // Hot Pink
+    '#DAA520', // Goldenrod
+    '#B8860B', // Dark Goldenrod
+    '#FFB6C1', // Light Pink
+    '#FFDAB9', // Peach
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setColorIndex((prev) => (prev + 1) % colors.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Get all featured products
   const featuredProducts = products.filter(product => product.featured);
   const displayProducts = featuredProducts;
@@ -54,7 +77,24 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16">
           <div className="space-y-2 mb-6 md:mb-0">
             <p className="text-white/70 text-sm font-medium tracking-widest uppercase">Curated Selection</p>
-            <h2 className="text-4xl font-bold text-white">Featured Products</h2>
+            <motion.h2 
+              className="text-4xl font-bold"
+              animate={{
+                color: colors[colorIndex],
+                textShadow: [
+                  '0 0 10px rgba(255, 215, 0, 0.5)',
+                  '0 0 20px rgba(255, 215, 0, 0.7)',
+                  '0 0 10px rgba(255, 215, 0, 0.5)',
+                ],
+              }}
+              transition={{
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
+              Featured Products
+            </motion.h2>
           </div>
           <Button
             variant="outline"
@@ -114,7 +154,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ onProductClick }) =
               <div className="mt-6 space-y-2">
                 <div className="flex justify-between items-start">
                   <h3 className="text-white text-lg font-medium tracking-wider">{product.name}</h3>
-                  <p className="text-white/90 font-semibold">${product.price.toFixed(2)}</p>
+                  <p className="text-white/90 font-semibold">R500</p>
                 </div>
                 <p className="text-white/50 text-sm">{product.category}</p>
                 

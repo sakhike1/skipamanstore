@@ -14,7 +14,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   
   const formatPrice = (price: number) => {
-    return `$${price.toFixed(2)}`;
+    return `R${price.toFixed(0)}`;
   };
   
   const handleMouseEnter = () => {

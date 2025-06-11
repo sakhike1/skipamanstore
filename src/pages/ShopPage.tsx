@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { products, getFeaturedProducts } from '../data/products'; // Assuming this path is correct
-import { Filter, X, ArrowRight } from 'lucide-react';
+import { Filter, X, ArrowRight, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface ProductCardProps {
   product: {
@@ -46,7 +47,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="p-4">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-medium text-black line-clamp-1">{product.name}</h3> {/* Solid B&W: text-black */}
-          <span className="text-black font-medium">${product.price.toFixed(2)}</span> {/* Solid B&W: text-black */}
+          <span className="text-black font-medium">R{product.price.toFixed(0)}</span> {/* Solid B&W: text-black */}
         </div>
         <p className="text-sm text-neutral-600 mb-3 capitalize">{product.category}</p> {/* Solid B&W: darker neutral for subtext */}
         <button
@@ -79,76 +80,180 @@ const ProductGrid: React.FC<{ products: typeof products; onProductClick: (id: st
 
 // New Arrivals Banner component - UPDATED
 const NewArrivalsSection: React.FC<{ onProductClick: (id: string) => void }> = ({ onProductClick }) => {
-  // Fetch 3 products instead of 4
   const featuredProducts = getFeaturedProducts().slice(0, 3);
 
   return (
-    <div className="w-full mb-12 relative group"> {/* Added group for "NEW ARRIVAL" text hover */}
-      {/* Adjust grid to md:grid-cols-3 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {/* First Product */}
-        {featuredProducts[0] && (
-          <div className="col-span-1">
-            <div className="relative group overflow-hidden"> {/* 'group' for image hover */}
-              <img
-                src={featuredProducts[0].images[0]}
-                alt={featuredProducts[0].name}
-                className="w-full h-auto object-cover aspect-[3/4] cursor-pointer filter grayscale group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                onClick={() => onProductClick(featuredProducts[0].id)}
-              />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div> {/* Subtle overlay */}
-            </div>
+    <div className="w-full mb-12">
+      {/* Hero Section */}
+      <div className="relative min-h-[90vh] bg-black overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 w-full h-[1000px] opacity-20"
+          style={{
+            backgroundImage: 'url(../assets/image4.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        
+        {/* Animated Overlay */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,_transparent_25%,_rgba(255,255,255,0.03)_25%,_rgba(255,255,255,0.03)_50%,_transparent_50%,_transparent_75%,_rgba(255,255,255,0.03)_75%)] bg-[length:50px_50px] animate-pulse"></div>
           </div>
-        )}
 
-        {/* Second Product with Text */}
-        {featuredProducts[1] && (
-          <div className="col-span-1">
-            <div className="h-full flex flex-col">
-              <div className="relative group overflow-hidden flex-grow"> {/* 'group' for image hover */}
-                <img
-                  src={featuredProducts[1].images[0]}
-                  alt={featuredProducts[1].name}
-                  className="w-full h-full object-cover aspect-square cursor-pointer filter grayscale group-hover:scale-105 transition-transform duration-300 ease-in-out"
+        <div className="relative container mx-auto px-4 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+            {/* Left Content */}
+            <div className="text-white space-y-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="space-y-4"
+              >
+                <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+                  Elevate Your
+                  <span className="block text-white">
+                    Style Game
+                  </span>
+                </h1>
+                <p className="text-xl text-white/60 max-w-lg">
+                  Premium t-shirts crafted with precision and passion. Experience luxury in every thread.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex flex-wrap gap-4"
+              >
+                <button
+                  onClick={() => onProductClick(featuredProducts[0].id)}
+                  className="group relative px-8 py-4 bg-black text-white font-medium overflow-hidden border-2 border-white transition-all duration-300"
+                >
+                  <span className="relative z-10 group-hover:text-black transition-colors duration-300">Shop Collection</span>
+                  <div className="absolute inset-0 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                </button>
+                <button
                   onClick={() => onProductClick(featuredProducts[1].id)}
-                />
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
-              </div>
-              <div className="bg-white p-4 border-t border-neutral-200">
-                <p className="text-sm text-black">
-                  Our exclusive collection is crafted with the finest materials and unparalleled attention to detail.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+                  className="group relative px-8 py-4 bg-white text-black font-medium overflow-hidden border-2 border-black transition-all duration-300"
+                >
+                  <span className="relative z-10 group-hover:text-white transition-colors duration-300">View New Arrivals</span>
+                  <div className="absolute inset-0 bg-[#8B4513] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                </button>
+              </motion.div>
 
-        {/* Third Product with Text */}
-        {featuredProducts[2] && (
-          <div className="col-span-1">
-            <div className="h-full flex flex-col">
-              <div className="relative group overflow-hidden flex-grow"> {/* 'group' for image hover */}
-                <img
-                  src={featuredProducts[2].images[0]}
-                  alt={featuredProducts[2].name}
-                  className="w-full h-full object-cover aspect-square cursor-pointer filter grayscale group-hover:scale-105 transition-transform duration-300 ease-in-out"
-                  onClick={() => onProductClick(featuredProducts[2].id)}
-                />
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
+              {/* Price Tag */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="inline-block bg-white text-black px-6 py-3 rounded-full font-bold text-xl"
+              >
+                R500
+              </motion.div>
+            </div>
+
+            {/* Right Content - Floating Products */}
+            <div className="relative h-[600px] hidden lg:block">
+              {featuredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  className="absolute"
+                  initial={{ opacity: 1, y: 0 }}
+                  animate={{ 
+                    y: [0, -15, 0],
+                    rotate: [0, -2, 2, 0],
+                    scale: [1, 1.02, 1],
+                    x: [0, 10, -10, 0]
+                  }}
+                  transition={{ 
+                    duration: 6,
+                    delay: index * 0.2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "easeInOut"
+                  }}
+                  style={{
+                    top: `${15 + (index * 30)}%`,
+                    left: `${20 + (index * 15)}%`,
+                    zIndex: 3 - index
+                  }}
+                >
+                  <div className="relative group cursor-pointer" onClick={() => onProductClick(product.id)}>
+                    <div className="absolute -inset-4 bg-white/5 rounded-full blur-xl group-hover:bg-white/10 transition-all duration-500"></div>
+                    <div className="relative bg-black/50 backdrop-blur-sm p-4 rounded-2xl border border-white/10">
+                      <div className="relative w-64 h-64 overflow-hidden rounded-xl">
+                        <motion.img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover transform transition-all duration-700"
+                          whileHover={{ scale: 1.1 }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                          <div className="absolute bottom-0 left-0 right-0 p-6">
+                            <h3 className="text-white text-xl font-medium mb-2">{product.name}</h3>
+                            <p className="text-white/80 mb-4">R500</p>
+                            <button
+                              onClick={() => onProductClick(product.id)}
+                              className="group relative px-6 py-2 text-sm font-medium rounded-full bg-white text-black overflow-hidden transition-all duration-300"
+                            >
+                              <span className="relative z-10 group-hover:text-white transition-colors duration-300">Shop Now</span>
+                              <div className="absolute inset-0 bg-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
               </div>
-              <div className="bg-white p-4 border-t border-neutral-200">
-                <p className="text-sm text-black">
-                  Discover sophisticated designs and timeless fashion in our curated selection.
-                </p>
+              </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black to-transparent"></div>
+      </div>
+
+      {/* Featured Products Grid */}
+      <div className="container mx-auto px-4 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {featuredProducts.map((product) => (
+            <motion.div
+              key={product.id}
+              className="group"
+              whileHover={{ y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="relative overflow-hidden rounded-lg aspect-square bg-black">
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 filter grayscale hover:grayscale-0"
+                  onClick={() => onProductClick(product.id)}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-white text-xl font-medium mb-2">{product.name}</h3>
+                    <p className="text-white/80 mb-4">R500</p>
+                    <button
+                      onClick={() => onProductClick(product.id)}
+                      className="group relative px-6 py-2 text-sm font-medium rounded-full bg-white text-black overflow-hidden transition-all duration-300"
+                    >
+                      <span className="relative z-10 group-hover:text-white transition-colors duration-300">Shop Now</span>
+                      <div className="absolute inset-0 bg-black transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                    </button>
               </div>
             </div>
           </div>
-        )}
-        {/* Fourth product card is removed */}
+            </motion.div>
+          ))}
       </div>
-      {/* "NEW ARRIVAL" text with hover effect & adjusted size for 3 columns */}
-      <div className="absolute text-[100px] sm:text-[120px] md:text-[150px] font-bold text-white tracking-wide top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full text-center mix-blend-difference pointer-events-none group-hover:opacity-75 transition-opacity duration-300">
-        NEW ARRIVAL
       </div>
     </div>
   );
@@ -158,7 +263,7 @@ const ShopPage: React.FC = () => {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500]);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
@@ -208,7 +313,7 @@ const ShopPage: React.FC = () => {
 
   const clearFilters = () => {
     setSelectedCategory(null);
-    setPriceRange([0, 100]);
+    setPriceRange([0, 500]);
     setCurrentPage(1); // Reset to first page when clearing filters
   };
 
@@ -288,19 +393,19 @@ const ShopPage: React.FC = () => {
               <div>
                 <h3 className="text-sm font-semibold text-black mb-3 uppercase tracking-wider">Price Range</h3>
                 <div className="space-y-4">
-                  <div className="flex justify-between text-sm text-neutral-700"> {/* Darker neutral for price text */}
-                    <span>${priceRange[0]}</span>
-                    <span>${priceRange[1]}</span>
+                  <div className="flex justify-between text-sm text-neutral-700">
+                    <span>R{priceRange[0]}</span>
+                    <span>R{priceRange[1]}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <input
                       type="range"
                       min="0"
-                      max="100"
+                      max="500"
                       value={priceRange[1]}
                       onChange={(e) => {
                         setPriceRange([priceRange[0], parseInt(e.target.value)]);
-                        setCurrentPage(1); // Reset to first page when changing price range
+                        setCurrentPage(1);
                       }}
                       className="w-full h-1 bg-neutral-300 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black"
                     />

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { ShoppingBag, Search, Menu, X, Loader2 } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Loader2, TrendingUp, Sparkles } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartPreview from '../cart/CartPreview';
 import { motion, AnimatePresence } from 'framer-motion';
 import { debounce } from 'lodash';
+import { products } from '../../data/products';
 
 interface NavItem {
   name: string;
@@ -21,8 +22,14 @@ const Header: React.FC = () => {
   const [showCartPreview, setShowCartPreview] = useState(false);
   const [isHeaderDark, setIsHeaderDark] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [hotProducts, setHotProducts] = useState(products.slice(0, 3)); // Get first 3 products as hottest
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const inactivityTimerRef = useRef<NodeJS.Timeout>();
   
   // Optimized scroll handler with debounce
   const handleScroll = useCallback(
@@ -153,6 +160,80 @@ const Header: React.FC = () => {
     }
   };
   
+  // Handle scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowSearchDropdown(false);
+      setIsSearchFocused(false);
+      setIsInteracting(false);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle route changes
+  useEffect(() => {
+    if (showSearchDropdown) {
+      setShowSearchDropdown(false);
+      setIsSearchFocused(false);
+      setIsInteracting(false);
+    }
+  }, [location.pathname]);
+
+  const resetInactivityTimer = () => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+    setIsInteracting(true);
+    inactivityTimerRef.current = setTimeout(() => {
+      if (!isSearchFocused) {
+        setShowSearchDropdown(false);
+        setIsInteracting(false);
+      }
+    }, 2000);
+  };
+
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true);
+    setShowSearchDropdown(true);
+    setIsInteracting(true);
+  };
+
+  const handleSearchBlur = () => {
+    setIsSearchFocused(false);
+    if (!isInteracting) {
+      setShowSearchDropdown(false);
+    }
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setIsInteracting(true);
+  };
+
+  const handleMouseMove = () => {
+    if (isSearchFocused || showSearchDropdown) {
+      setIsInteracting(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isSearchFocused) {
+      setIsInteracting(false);
+      setShowSearchDropdown(false);
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, []);
+  
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -219,28 +300,37 @@ const Header: React.FC = () => {
           
           {/* Action Buttons */}
           <div className="flex items-center space-x-6">
-            {/* Search Form */}
-            <form onSubmit={handleSearch} className="relative">
+            {/* Search Form with Dropdown */}
+            <div className="relative">
+              <form onSubmit={handleSearch}>
               <motion.div
+                ref={searchContainerRef}
                 initial={false}
                 animate={{ width: isSearchFocused ? 200 : 40 }}
                 className="relative"
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
               >
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => {
-                    if (!searchQuery) setIsSearchFocused(false);
-                  }}
+                  onChange={handleSearchChange}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
                   placeholder={isSearchFocused ? "Search products..." : ""}
                   className={`
-                    w-full px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm
-                    ${textColor} placeholder-gray-400
-                    focus:outline-none focus:ring-2 focus:ring-white/20
+                    w-full px-4 py-2 rounded-full 
+                    ${isSearchFocused 
+                      ? 'bg-white/20 backdrop-blur-xl border-white/30' 
+                      : 'bg-black/10 backdrop-blur-md border-white/10'
+                    }
+                    ${isScrolled ? 'text-black placeholder-black/60' : 'text-white placeholder-white/60'}
+                    border
+                    focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40
+                    shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]
                     transition-all duration-300
+                    hover:bg-white/25
                   `}
                   aria-label="Search products"
                 />
@@ -248,7 +338,10 @@ const Header: React.FC = () => {
                   type="submit"
                   className={`
                     absolute right-2 top-1/2 -translate-y-1/2 p-1
-                    rounded-full transition-all ${textColor} ${hoverBgColor}
+                    rounded-full transition-all 
+                    ${isScrolled ? 'text-black hover:text-black/90' : 'text-white hover:text-white/90'}
+                    hover:bg-white/20
+                    backdrop-blur-sm
                   `}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -258,6 +351,78 @@ const Header: React.FC = () => {
                 </motion.button>
               </motion.div>
             </form>
+
+              {/* Search Dropdown */}
+              <AnimatePresence>
+                {showSearchDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full left-0 mt-2 w-72 bg-white/10 backdrop-blur-xl rounded-lg overflow-hidden z-[100] border border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]"
+                  >
+                    <div className="relative">
+                      {/* Glass shimmer effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+                      
+                      <div className="p-4 relative">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="relative">
+                            <TrendingUp size={18} className={isScrolled ? 'text-black' : 'text-white'} />
+                            <Sparkles size={12} className={`absolute -top-1 -right-1 ${isScrolled ? 'text-black/80' : 'text-white/80'} animate-pulse`} />
+                          </div>
+                          <h3 className={`font-medium ${isScrolled ? 'text-black' : 'text-white'}`}>
+                            Hottest T-Shirts
+                          </h3>
+                        </div>
+                        <div className="space-y-3">
+                          {hotProducts.map((product) => (
+                            <motion.div
+                              key={product.id}
+                              whileHover={{ scale: 1.02 }}
+                              className="group cursor-pointer relative"
+                              onClick={() => {
+                                navigate(`/product/${product.id}`);
+                                setShowSearchDropdown(false);
+                              }}
+                            >
+                              <div className="flex items-center gap-3 p-2 rounded-md hover:bg-white/20 transition-all duration-300 border border-transparent hover:border-white/20">
+                                <div className="w-14 h-14 bg-white/5 rounded-md overflow-hidden relative group-hover:shadow-lg transition-all duration-300">
+                                  <img
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className={`text-sm font-medium ${isScrolled ? 'text-black group-hover:text-black/90' : 'text-white group-hover:text-white/90'} transition-colors duration-300`}>
+                                    {product.name}
+                                  </h4>
+                                  <div className="flex items-center gap-2">
+                                    <p className={`text-sm font-semibold ${isScrolled ? 'text-black/90' : 'text-white/90'}`}>R{product.price}</p>
+                                    <span className={`text-xs font-medium bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-900 px-2 py-0.5 rounded-full shadow-sm`}>
+                                      Hot Deal
+                                    </span>
+                                  </div>
+                                </div>
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                >
+                                  <Sparkles size={16} className={isScrolled ? 'text-black/80' : 'text-white/80'} />
+                                </motion.div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             {/* Cart Button */}
             <motion.button 

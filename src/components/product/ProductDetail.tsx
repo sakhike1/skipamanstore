@@ -91,7 +91,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onGoBack }) => {
           </div>
           
           <h1 className="text-2xl font-medium text-gray-900 mb-2">{product.name}</h1>
-          <p className="text-xl font-medium text-gray-900 mb-8">€{product.price.toFixed(2)}</p>
+          <p className="text-xl font-medium text-gray-900 mb-8">R{product.price.toFixed(0)}</p>
           
           {/* Product info accordion */}
           <div className="space-y-0 mb-6">

@@ -88,7 +88,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onProductClick }) =
                   ))}
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <p className="text-lg font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+                  <p className="text-lg font-semibold text-gray-900">R{product.price.toFixed(0)}</p>
                   <button 
                     className="bg-teal-600 text-white rounded-md px-3 py-1 text-sm hover:bg-teal-700 transition-colors"
                     onClick={(e) => {
